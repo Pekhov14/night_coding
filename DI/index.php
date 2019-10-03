@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Design pattern "Dependency Injection)"
+ */
+
 require_once 'classes/Connection.php';
 require_once 'classes/QueryBuilder.php';
 
