@@ -1,28 +1,21 @@
 <?php
+	require_once 'DbConnect.php';
 
-function fill_brand($pdo) {
-	$output = '';
-	$sql = 'SELECT * FROM brand';
-	$stmt = $pdo->query($sql);
-	$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-	foreach ($result as $res)
-		$output .= '<option value="'. $res['brand_id'] .'">' . $res['brand_name'] .'</option>';
-
-	return $output;
-}
-
-function fill_product($pdo) {
-	$output = '';
-	$sql = 'SELECT * FROM product';
-	$stmt = $pdo->query($sql);
-	$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-	foreach ($result as $res) {
-		$output .= '<div class="col-md-3"> ';
-		$output .= '<div style="border:1px solid #ccc; padding: 20px; margin-bottom: 20px;">' . $res['product_name'];
-		$output .= '</div>';
-		$output .= '</div>';
+	if (isset($_POST['authorId'])) {
+		$db   = new DbConnect;
+		$conn = $db->connect();
+		$sql  = "SELECT * FROM books WHERE author_id = " . $_POST['authorId'];
+		$stmt = $conn->prepare($sql);
+		$stmt->execute();
+		$books = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		echo json_encode($books);
 	}
-	return $output;
-}
+
+	function load_authors() {
+		$db   = new DbConnect;
+		$conn = $db->connect();
+		$sql  = 'SELECT * FROM authors';
+		$stmt = $conn->prepare($sql);
+		$stmt->execute();
+		return $authors = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	}

@@ -1,6 +1,6 @@
 <?php
-    require 'connect.php';
-//    require  'functions.php';
+    require_once 'DbConnect.php';
+    require_once  'functions.php';
 ?>
 
 <!doctype html>
@@ -15,22 +15,30 @@
 <body>
 <br><br>
 <div class="container">
-	<form>
-		<div class="form-group">
-			<label for="exampleFormControlSelect1">Example select</label>
-			<select class="form-control" id="exampleFormControlSelect1">
-				<option>1</option>
-			</select>
-		</div>
-		<div class="form-group">
-			<label for="exampleFormControlSelect1">Example select</label>
-			<select class="form-control" id="exampleFormControlSelect1">
-				<option>1</option>
-			</select>
-		</div>
+    <h1 class="text-center">Зависимый выпадающий список</h1>
+    <div class="wrap_form" style="width: 50%; margin: 0 auto; padding-top: 50px;">
+        <form>
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Авор</label>
 
-	</form>
+                <select class="form-control" id="authors" name="authors">
+                    <option disabled selected>Выберите автора</option>
+                    <?php
+                        $authors = load_authors();
 
+                        foreach ($authors as $author)
+                            echo "<option id='". $author['id'] ."' value='".$author['id']."' >" . $author['name'] . "</option>";
+                    ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Книга</label>
+                <select class="form-control" id="books" name="books">
+                    <option disabled selected>Выберите книгу</option>
+                </select>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -38,17 +46,22 @@
 
 <script>
 	$(document).ready(function () {
-		$('#brand').change(function () {
-			let brand_id = $(this).val(); // id текущего элемента option
+        $('#authors').change(function () {
+            let authorId = $(this).val(); // this == #authors id текущего элемента option
 
-			$.ajax({
-				url: "load_data.php",
-				method: "POST",
-				data: {brand_id:brand_id}, // создаем в post поле brand_id со знач brand_id из js
-				success: function (data) {
-					$('#show_product').html(data);
-                }
-			});
+            $.ajax({
+            	url: "functions.php",
+            	method: "POST",
+            	data: {authorId:authorId}  // создаем в post поле authorId со знач authorId из option
+                }).done(function(books) {
+                    // console.log(books);
+                    books = JSON.parse(books);
+                    $('#books').empty(); // что бы старые данные очищались
+                    books.forEach(function (books) {
+                        $('#books').append('<option>' + books.name + '</option>');
+                    });
+            });
+
         });
     });
 </script>
